@@ -1,10 +1,10 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { PieChartComponent } from "../PiechartComponent/PieChartComponent";
 import StatusComponent from "../StatusComponent/StatusComponent";
 import TableComponent from "../TableComponent/TableComponent";
 import styles from "./DashboardComponent.module.css";
 import { useParams } from "react-router-dom";
+import { LineGraphComponent } from "../LineGraphComponent/LineGraphComponent";
 
 export default function DashboardComponent() {
   const { serviceNode } = useParams();
@@ -42,7 +42,7 @@ export default function DashboardComponent() {
 
       <div className={styles.dashboardGrid}>
         <div className={styles.dashboardCard}>
-          <PieChartComponent
+          <LineGraphComponent
             data={cpuUsage}
             metricKey="cpuIdle"
             title="CPU Usage"
@@ -67,7 +67,7 @@ export default function DashboardComponent() {
         </div>
 
         <div className={styles.dashboardCard}>
-          <PieChartComponent
+          <LineGraphComponent
             data={memoryConsumption}
             metricKey="memoryUsage"
             title="Memory Consumption"
