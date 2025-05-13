@@ -1,0 +1,11 @@
+/* .chartContainer canvas {
+    width: 100% !important;
+    height: 100% !important;
+} */
+
+
+.chartContainer {
+    width: 80%;
+    height: 80%;
+    position: relative;
+}

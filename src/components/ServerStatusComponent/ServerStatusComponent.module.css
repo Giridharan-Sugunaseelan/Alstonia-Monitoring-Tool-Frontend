@@ -1,0 +1,18 @@
+.componentDiv {
+    background-color: hsl(0, 0%, 90%);
+    display: inline-block;
+    /* border: 1px solid black; */
+    height: auto;
+    border-radius: 5px;
+    padding: 5px;
+    padding-left: 1%;
+    margin: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+
+}
+
+.componentDiv:hover {
+    background-color: hsl(0, 0%, 85%);
+}

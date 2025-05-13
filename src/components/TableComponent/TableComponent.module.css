@@ -1,0 +1,62 @@
+.tableContainer {
+    width: 100%;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.tableHeader {
+    padding: 12px;
+    background-color: #f3f4f6;
+    font-weight: bold;
+    border-bottom: 2px solid #ddd;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.tableRow:hover {
+    background-color: #f9fafb;
+}
+
+.tableCell {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.cpuIdleGreen {
+    color: #16a34a;
+}
+
+.cpuIdleOrange {
+    color: #f97316;
+}
+
+.cpuIdleRed {
+    color: #dc2626;
+}
+
+.memoryConsumptionGreen {
+    color: #16a34a;
+}
+
+.memoryConsumptionOrange {
+    color: #f97316;
+}
+
+.memoryConsumptionRed {
+    color: #dc2626;
+}
