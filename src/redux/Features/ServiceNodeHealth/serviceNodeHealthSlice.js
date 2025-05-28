@@ -13,13 +13,20 @@ const serviceHealthSlice = createSlice({
   initialState,
   reducers: {
     updateServiceNodeHealth: (state, action) => {
-      const payload = {
-        ...action.payload,
-        healthMetrics: JSON.parse(action.payload.healthMetrics),
-      };
+      // const payload = {
+      //   ...action.payload,
+      //   healthMetrics: JSON.parse(action.payload.healthMetrics),
+      // };
+      // state.realtime = {
+      //   ...state.realtime,
+      //   [payload.serviceNode]: payload,
+      // };
       state.realtime = {
         ...state.realtime,
-        [payload.serviceNode]: payload,
+        [action?.payload?.serviceNode]: {
+          ...state.realtime[action.payload.serviceNode],
+          [action.payload.serverIP]: action.payload,
+        },
       };
     },
   },

@@ -1,107 +1,129 @@
 import React from "react";
-import styles from "./TableComponent.module.css";
+import {
+  Box,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Typography,
+  useTheme,
+} from "@mui/material";
 
 export default function TableComponent({ data }) {
+  const theme = useTheme();
+
+  const getCpuIdleColor = (value) => {
+    const val = parseFloat(value);
+    if (val > 80) return theme.palette.success.main;
+    if (val > 70) return "orange";
+    return theme.palette.error.main;
+  };
+
+  const getMemoryUsageColor = (value) => {
+    const val = parseFloat(value);
+    if (val > 80) return theme.palette.error.main;
+    if (val > 70) return "orange";
+    return theme.palette.success.main;
+  };
+
+  const cellStyle = (isLast) => ({
+    textAlign: "center",
+    borderRight: isLast ? "none" : `1px solid ${theme.palette.divider}`,
+    whiteSpace: "nowrap", // Prevent text wrap
+  });
+
+  const headers =
+    data?.length > 0
+      ? Object.keys(data[0]).filter((key) => key !== "timeStamp")
+      : [];
+
+  const getCellStyle = (key, value) => {
+    if (key === "cpuIdle") {
+      return { color: getCpuIdleColor(value), fontWeight: 500 };
+    } else if (key === "serverIP" || key === "hostName") {
+      return {};
+    } else {
+      return { color: getMemoryUsageColor(value), fontWeight: 500 };
+    }
+  };
+
   return (
-    <div className={styles.tableContainer}>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th className={styles.tableHeader}>Server IP</th>
-            <th className={styles.tableHeader}>Host Name</th>
-            <th className={styles.tableHeader}>CPU Idle (%)</th>
-            <th className={styles.tableHeader}>Memory Consumption (%)</th>
-            <th className={styles.tableHeader}>Paging</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => {
-            let cpuIdleClass = styles.cpuIdleRed;
-            if (parseFloat(item.cpuIdle) > 80) {
-              cpuIdleClass = styles.cpuIdleGreen;
-            } else if (parseFloat(item.cpuIdle) > 70) {
-              cpuIdleClass = styles.cpuIdleOrange;
-            }
+    <Box sx={{ width: "100%", overflowX: "auto" }}>
+      <Typography
+        variant="subtitle1"
+        gutterBottom
+        ml={2}
+        sx={{
+          position: "sticky",
+          top: 0,
+          backgroundColor: theme.palette.background.paper,
+          zIndex: 3,
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          py: 1,
+        }}
+      >
+        Server Metrics Overview
+      </Typography>
 
-            let memoryConsumptionClass = styles.memoryConsumptionGreen;
-            if (parseFloat(item.memoryUsage) > 80) {
-              memoryConsumptionClass = styles.memoryConsumptionRed;
-            } else if (parseFloat(item.memoryUsage) > 70) {
-              memoryConsumptionClass = styles.memoryConsumptionOrange;
-            }
-
-            return (
-              <tr key={index} className={styles.tableRow}>
-                <td className={styles.tableCell}>{item.serverIP}</td>
-                <td className={styles.tableCell}>{item.hostName}</td>
-                <td className={`${styles.tableCell} ${cpuIdleClass}`}>
-                  {item.cpuIdle}
-                </td>
-                <td className={`${styles.tableCell} ${memoryConsumptionClass}`}>
-                  {item.memoryUsage}
-                </td>
-                <td className={styles.tableCell}>{item.paging}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+      {/* Scrollable Table Wrapper */}
+      <Box sx={{ minWidth: "100%", overflowX: "auto" }}>
+        <Table size="small" sx={{ minWidth: 600 }}>
+          <TableHead
+            sx={{
+              position: "sticky",
+              top: 36,
+              backgroundColor: theme.palette.background.paper,
+              zIndex: 2,
+              borderBottom: `1px solid ${theme.palette.divider}`,
+            }}
+          >
+            <TableRow>
+              {headers.map((key, idx) => (
+                <TableCell
+                  key={key}
+                  sx={{
+                    fontWeight: "bold",
+                    ...cellStyle(idx === headers.length - 1),
+                  }}
+                >
+                  {key
+                    .replace(/([A-Z])/g, " $1")
+                    .replace(/^./, (str) => str.toUpperCase())}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data && data.length > 0 ? (
+              data.map((row, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  {headers.map((key, idx) => (
+                    <TableCell
+                      key={key}
+                      sx={{
+                        ...cellStyle(idx === headers.length - 1),
+                        ...getCellStyle(key, row[key]),
+                      }}
+                    >
+                      {row[key]}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={headers.length || 1}
+                  sx={{ textAlign: "center", color: "text.secondary" }}
+                >
+                  No data available
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Box>
+    </Box>
   );
 }
-
-// import React from "react";
-// import styles from "./TableComponent.module.css";
-
-// export default function TableComponent({ data }) {
-//   let cpuIdleClass = styles?.cpuIdleGreen;
-//   if (parseFloat(data?.cpuIdle) > 80) {
-//     cpuIdleClass = styles?.cpuIdleRed;
-//   } else if (parseFloat(data?.cpuIdle) > 70) {
-//     cpuIdleClass = styles?.cpuIdleOrange;
-//   }
-
-//   let memoryConsumptionClass = styles.memoryConsumptionGreen;
-//   if (parseFloat(data?.memoryConsumption) > 80) {
-//     memoryConsumptionClass = styles.memoryConsumptionRed;
-//   } else if (parseFloat(data?.memoryConsumption) > 70) {
-//     memoryConsumptionClass = styles.memoryConsumptionOrange;
-//   }
-
-//   return (
-//     <div className={styles.tableContainer}>
-//       <table className={styles.table}>
-//         <thead>
-//           <tr>
-//             <th className={styles.tableHeader}>Server IP</th>
-//             <th className={styles.tableHeader}>Host Name</th>
-//             <th className={styles.tableHeader}>CPU Idle (%)</th>
-//             <th className={styles.tableHeader}>Memory Consumption (%)</th>
-//             <th className={styles.tableHeader}>Paging</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {data ? (
-//             <tr className={styles.tableRow}>
-//               <td className={styles.tableCell}>{data?.serverIp}</td>
-//               <td className={styles.tableCell}>{data?.hostName}</td>
-//               <td className={`${styles.tableCell} ${cpuIdleClass}`}>
-//                 {data?.cpuIdle}
-//               </td>
-//               <td className={`${styles.tableCell} ${memoryConsumptionClass}`}>
-//                 {data?.memoryUsage}
-//               </td>
-//               <td className={styles.tableCell}>{data.paging}</td>
-//             </tr>
-//           ) : (
-//             <tr>
-//               <td colSpan="5" className={styles.noData}>
-//                 No data available
-//               </td>
-//             </tr>
-//           )}
-//         </tbody>
-//       </table>
-//     </div>
-//   );
-// }

@@ -1,104 +1,66 @@
 import React from "react";
-import styles from "./StatusComponent.module.css";
+import {
+  Box,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Typography,
+} from "@mui/material";
 
 function StatusComponent({ data, metricKey, title }) {
   const sortedData =
     data.length > 1 ? data.sort((a, b) => b[metricKey] - a[metricKey]) : data;
 
+  const getCellColor = (value) => {
+    if (value > 80) {
+      return metricKey !== "cpuIdle" ? "error.main" : "success.main";
+    } else if (value > 70) {
+      return "orange";
+    } else {
+      return metricKey !== "cpuIdle" ? "success.main" : "error.main";
+    }
+  };
+
   return (
-    <div className={styles.statusContainer}>
-      <table className={styles.statusTable}>
-        <thead className={styles.statusTableHeader}>
-          <tr>
-            <th className={styles.statusTableHeaderCell}>Server IP</th>
-            <th className={styles.statusTableHeaderCell}>{title} (%)</th>
-          </tr>
-        </thead>
-        <tbody>
+    <Box sx={{ overflowX: "auto", p: 2 }}>
+      <Typography variant="h6" gutterBottom>
+        {title}
+      </Typography>
+      <Table size="small" sx={{ minWidth: 300 }}>
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ fontWeight: "bold" }}>Server IP</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>{title} (%)</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {sortedData.length > 0 ? (
-            sortedData.map((item, index) => {
-              const cpuIdle = item[metricKey];
-              let cpuClass =
-                metricKey !== "cpuIdle"
-                  ? styles.cpuIdleGreen
-                  : styles.cpuIdleRed;
-
-              if (cpuIdle > 80) {
-                cpuClass =
-                  metricKey !== "cpuIdle"
-                    ? styles.cpuIdleRed
-                    : styles.cpuIdleGreen;
-              } else if (cpuIdle > 70) {
-                cpuClass = styles.cpuIdleOrange;
-              }
-
-              return (
-                <tr key={index} className={styles.statusTableRow}>
-                  <td className={styles.statusTableCell}>{item.serverIP}</td>
-                  <td className={`${styles.statusTableCell} ${cpuClass}`}>
-                    {cpuIdle}
-                  </td>
-                </tr>
-              );
-            })
+            sortedData.map((item, index) => (
+              <TableRow key={index}>
+                <TableCell>{item.serverIP}</TableCell>
+                <TableCell
+                  sx={{ color: getCellColor(item[metricKey]), fontWeight: 500 }}
+                >
+                  {item[metricKey]}
+                </TableCell>
+              </TableRow>
+            ))
           ) : (
-            <tr>
-              <td colSpan="2" className={styles.noData}>
+            <TableRow>
+              <TableCell
+                colSpan={2}
+                sx={{ textAlign: "center", color: "text.secondary" }}
+              >
                 No data available
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
-    </div>
+        </TableBody>
+      </Table>
+    </Box>
   );
 }
 
 export default StatusComponent;
-
-// import React from "react";
-// import styles from "./StatusComponent.module.css";
-
-// function StatusComponent({ data, metricKey, title }) {
-//   const cpuIdle = data[metricKey];
-//   console.log(metricKey, cpuIdle);
-
-//   let cpuClass = styles.cpuIdleGreen;
-
-//   if (cpuIdle > 80) {
-//     cpuClass = styles.cpuIdleRed;
-//   } else if (cpuIdle > 70) {
-//     cpuClass = styles.cpuIdleOrange;
-//   }
-
-//   return (
-//     <div className={styles.statusContainer}>
-//       <table className={styles.statusTable}>
-//         <thead className={styles.statusTableHeader}>
-//           <tr>
-//             <th className={styles.statusTableHeaderCell}>Server IP</th>
-//             <th className={styles.statusTableHeaderCell}>{title} (%)</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {data ? (
-//             <tr className={styles.statusTableRow}>
-//               <td className={styles.statusTableCell}>{data.serverIP}</td>
-//               <td className={`${styles.statusTableCell} ${cpuClass}`}>
-//                 {cpuIdle}
-//               </td>
-//             </tr>
-//           ) : (
-//             <tr>
-//               <td colSpan="2" className={styles.noData}>
-//                 No data available
-//               </td>
-//             </tr>
-//           )}
-//         </tbody>
-//       </table>
-//     </div>
-//   );
-// }
-
-// export default StatusComponent;

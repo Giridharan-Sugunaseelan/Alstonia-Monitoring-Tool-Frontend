@@ -1,43 +1,117 @@
-import "./App.css";
-import VerticalDropdownComponent from "./components/ApplicationStatusComponent/VerticalDropDownComponent";
-import InstanceComponent from "./components/InstanceComponent/InstanceComponent";
-import ServerStatusComponent from "./components/ServerStatusComponent/ServerStatusComponent";
-import ServiceNodeComponent from "./components/ServiceNodeComponent/ServiceNodeComponent";
-import NavigationbarComponent from "./components/NavigationbarComponent/NavigationbarComponent";
-import DashboardComponent from "./components/DashboardComponent/DashboardComponent";
-import HeaderComponent from "./components/HeaderComponent/HeaderComponent";
+import React, { useState } from "react";
+import {
+  AppBar,
+  Box,
+  Drawer,
+  IconButton,
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { Route, Routes } from "react-router-dom";
-import StatusComponent from "./components/StatusComponent/StatusComponent";
+import MenuIcon from "@mui/icons-material/Menu";
+import NavigationbarComponent from "./Components/NavigationbarComponent/NavigationbarComponent";
+import ServerDashBoardComponent from "./Components/ServerDashBoardComponent/ServerDashBoardComponent";
 import WebSocketListener from "./websocketlistener/WebSocketListener";
+import ApplicationDashBoardComponent from "./components/ApplicationDashBoardComponent/ApplicationDashBoardComponent";
 
-export default function App() {
+function App() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
   return (
     <>
       <WebSocketListener />
-      <div className="h-screen flex flex-col">
-        <div className="h-16 flex-shrink-0 bg-white border-b border-gray-300">
-          <HeaderComponent />
-        </div>
+      <Box
+        sx={{
+          height: "100vh",
+          width: "100vw",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {/* Top Header */}
+        <AppBar
+          position="static"
+          elevation={0}
+          sx={{
+            backgroundColor: theme.palette.background.paper,
+            color: "#333",
+            borderBottom: "1px solid #ddd",
+          }}
+        >
+          <Toolbar>
+            {isSmallScreen && (
+              <IconButton
+                edge="start"
+                color="inherit"
+                onClick={handleDrawerToggle}
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
+            <Typography variant="h6" sx={{ flexGrow: 1 }}>
+              Dashboard
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Box sx={{ display: "flex", flex: 1, overflow: "hidden" }}>
+          {!isSmallScreen && (
+            <Box
+              sx={{
+                width: {
+                  sm: 240,
+                  md: 280,
+                  lg: 300,
+                  xl: 320,
+                },
+                borderRight: "1px solid #ddd",
+                height: "100%",
+                overflow: "auto",
+              }}
+            >
+              <NavigationbarComponent />
+            </Box>
+          )}
+          {isSmallScreen && (
+            <Drawer
+              anchor="left"
+              open={drawerOpen}
+              onClose={handleDrawerToggle}
+              ModalProps={{ keepMounted: true }}
+            >
+              <Box sx={{ width: "300px", height: "100%" }}>
+                <NavigationbarComponent />
+              </Box>
+            </Drawer>
+          )}
 
-        <div className="flex flex-1 overflow-hidden">
-          <div className="w-80 bg-gray-100 overflow-y-auto">
-            <NavigationbarComponent />
-          </div>
-
-          <div className="flex-1 p-4 overflow-y-auto bg-gray-50">
+          <Box sx={{ flex: 1, height: "100%", overflow: "auto", padding: 2 }}>
             <Routes>
               <Route
                 path="/servers/:serviceNode"
-                element={<DashboardComponent />}
+                element={<ServerDashBoardComponent />}
               />
-              {/* <Route
-                path="/application-statistics"
-                element={<ApplicationStatistics />}
-              /> */}
+              <Route
+                path="/application/:serviceNode"
+                element={<ApplicationDashBoardComponent />}
+              />
             </Routes>
-          </div>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Box>
     </>
+    // <>
+    //   {/* <ServerDashBoardComponent /> */}
+    //   <ApplicationDashBoardComponent />
+    // </>
   );
 }
+
+export default App;

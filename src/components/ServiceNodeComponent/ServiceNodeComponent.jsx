@@ -1,63 +1,89 @@
 import React, { useState } from "react";
-import styles from "./ServiceNodeComponent.module.css";
-import ServerStatusComponent from "../ServerStatusComponent/ServerStatusComponent";
-import VerticalDropdownComponent from "../ApplicationStatusComponent/VerticalDropDownComponent";
+import {
+  List,
+  ListItem,
+  ListItemButton,
+  Typography,
+  Collapse,
+} from "@mui/material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import VerticalDropdownComponent from "../VerticalDropDownComponent/VerticalDropDownComponent";
 import { useDispatch } from "react-redux";
 import { fetchServers } from "../../redux/Features/Servers/ServerAction/ServerAction";
 import { fetchServiceNodeHealth } from "../../redux/Features/ServiceNodes/ServiceNodeAction/serviceNodeActions";
-import { useNavigate } from "react-router-dom";
-// import { updateServerHealth } from "../../redux/Features/Servers/ServerSlice";
+import { useTheme } from "@mui/material/styles";
+import { useNavigate } from "react-router";
 
 export default function ServiceNodeComponent({ service }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const dispatcher = useDispatch();
+  const theme = useTheme();
   const navigator = useNavigate();
   function getServers() {
     dispatcher(fetchServers(service.serviceNodeId));
-    navigator(`/servers/${service.serviceName}`);
+    navigator(`servers/${service.serviceName}`);
   }
 
   function getServiceHealth() {
     dispatcher(fetchServiceNodeHealth(service.serviceNodeId));
+    navigator(`application/${service.serviceName}`);
   }
 
   return (
     <>
-      <div className={isOpen ? styles.componentActiveDiv : styles.componentDiv}>
-        <div
-          className={styles.componentTile}
-          onClick={() => setIsOpen((i) => !i)}
+      <ListItem
+        disablePadding
+        sx={{
+          bgcolor: open ? theme.palette.action.selected : "transparent",
+          "&:hover": {
+            bgcolor: theme.palette.action.hover,
+          },
+          mb: 0.1,
+        }}
+      >
+        <ListItemButton onClick={() => setOpen((prev) => !prev)}>
+          <Typography
+            variant="subtitle1"
+            sx={{
+              flexGrow: 1,
+              color: theme.palette.text.primary,
+              fontWeight: open
+                ? theme.typography.fontWeightMedium
+                : theme.typography.fontWeightRegular,
+            }}
+          >
+            {service.serviceName}
+          </Typography>
+          {open ? (
+            <ExpandLess sx={{ color: theme.palette.text.secondary }} />
+          ) : (
+            <ExpandMore sx={{ color: theme.palette.text.secondary }} />
+          )}
+        </ListItemButton>
+      </ListItem>
+
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <List
+          disablePadding
+          sx={{
+            bgcolor: theme.palette.background.paper,
+            pl: 2,
+          }}
         >
-          <div>{service.serviceName}</div>
-          <p>{isOpen ? "up" : "down"}</p>
-        </div>
-        <div
-          className={`${styles.subComponentDiv} ${isOpen ? styles.open : ""}`}
-        >
-          <ul className={styles.subcomponentList}>
-            <li>
-              {/* <ServerStatusComponent
-                name={"Server stats"}
-                getServers={getServers}
-              /> */}
-              <VerticalDropdownComponent
-                name={"Server Stats"}
-                stateKey={"servers"}
-                serviceNode={service.serviceName}
-                onClick={getServers}
-              />
-            </li>
-            <li>
-              <VerticalDropdownComponent
-                name={"Application status"}
-                stateKey={"serviceNodeHealth"}
-                serviceNode={service.serviceName}
-                onClick={getServiceHealth}
-              />
-            </li>
-          </ul>
-        </div>
-      </div>
+          <VerticalDropdownComponent
+            name="Server Stats"
+            stateKey="servers"
+            serviceNode={service.serviceName}
+            onClick={getServers}
+          />
+          <VerticalDropdownComponent
+            name="Application Status"
+            stateKey="serviceNodeHealth"
+            serviceNode={service.serviceName}
+            onClick={getServiceHealth}
+          />
+        </List>
+      </Collapse>
     </>
   );
 }
